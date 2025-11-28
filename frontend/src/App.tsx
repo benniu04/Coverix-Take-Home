@@ -1,0 +1,108 @@
+import { useEffect, useRef } from 'react';
+import { useChat } from './hooks/useChat';
+import { ChatMessage } from './components/ChatMessage';
+import { ChatInput } from './components/ChatInput';
+import { TypingIndicator } from './components/TypingIndicator';
+import { ProgressIndicator } from './components/ProgressIndicator';
+import './App.css';
+
+function App() {
+  const {
+    sessionId,
+    messages,
+    currentState,
+    isComplete,
+    isLoading,
+    error,
+    startConversation,
+    sendMessage,
+    resetChat,
+  } = useChat();
+
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!sessionId) {
+      startConversation();
+    }
+  }, [sessionId, startConversation]);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages, isLoading]);
+
+  return (
+    <div className="app">
+      <div className="background-pattern" />
+      
+      <header className="app-header">
+        <div className="header-content">
+          <div className="logo">
+            <svg viewBox="0 0 24 24" fill="currentColor" className="logo-icon">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+            </svg>
+            <span className="logo-text">InsureBot</span>
+          </div>
+          <div className="header-info">
+            <span className="badge">Secure Onboarding</span>
+          </div>
+        </div>
+      </header>
+
+      <main className="chat-container">
+        {sessionId && (
+          <ProgressIndicator currentState={currentState} isComplete={isComplete} />
+        )}
+        
+        <div className="messages-area">
+          {error && (
+            <div className="error-banner">
+              <svg viewBox="0 0 24 24" fill="currentColor" className="error-icon">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+              </svg>
+              <span>{error}</span>
+              <button onClick={startConversation} className="retry-btn">Retry</button>
+            </div>
+          )}
+          
+          <div className="messages-list">
+            {messages.map((message) => (
+              <ChatMessage key={message.id} message={message} />
+            ))}
+            {isLoading && <TypingIndicator />}
+            <div ref={messagesEndRef} />
+          </div>
+        </div>
+
+        {isComplete ? (
+          <div className="completion-banner">
+            <div className="completion-content">
+              <svg viewBox="0 0 24 24" fill="currentColor" className="completion-icon">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+              </svg>
+              <div>
+                <h3>Onboarding Complete!</h3>
+                <p>Thank you for providing your information.</p>
+              </div>
+            </div>
+            <button onClick={resetChat} className="new-session-btn">
+              Start New Session
+            </button>
+          </div>
+        ) : (
+          <ChatInput
+            onSendMessage={sendMessage}
+            disabled={isLoading || !sessionId}
+            placeholder={isLoading ? "Please wait..." : "Type your response..."}
+          />
+        )}
+      </main>
+
+      <footer className="app-footer">
+        <p>Your data is encrypted and secure. By continuing, you agree to our Terms of Service.</p>
+      </footer>
+    </div>
+  );
+}
+
+export default App;
