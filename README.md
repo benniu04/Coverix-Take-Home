@@ -50,13 +50,7 @@ The chatbot collects information in this order:
 
 ## Setup Instructions
 
-### 1. Clone and Navigate
-
-```bash
-cd Coverix-TakeHome
-```
-
-### 2. Backend Setup
+### 1. Backend Setup
 
 **IMPORTANT:** You need an OpenAI API key to run the backend!
 
@@ -65,11 +59,8 @@ cd Coverix-TakeHome
 cd backend
 
 # Create .env file with your OpenAI API key (REQUIRED!)
-echo "OPENAI_API_KEY=sk-your_actual_api_key_here" > .env
+echo "OPENAI_API_KEY='sk-your_actual_api_key_here'" > .env
 # Replace sk-your_actual_api_key_here with your real OpenAI API key
-
-# Option 1: Use the run script (easiest)
-./run.sh
 
 # Option 2: Manual setup
 python3 -m venv venv
@@ -83,16 +74,13 @@ The backend will start at `http://localhost:8000`
 - ❌ `ModuleNotFoundError: No module named 'fastapi'` → You're using system Python instead of venv. Use `./venv/bin/python main.py`
 - ❌ `OPENAI_API_KEY not found` → Create the `.env` file with your API key first
 
-### 3. Frontend Setup
+### 2. Frontend Setup
 
 Open a new terminal:
 
 ```bash
 # Navigate to frontend
 cd frontend
-
-# Option 1: Use the run script (easiest)
-./run.sh
 
 # Option 2: Manual setup
 npm install
@@ -101,7 +89,7 @@ npm run dev
 
 The frontend will start at `http://localhost:5173`
 
-### 4. Open the App
+### 3. Open the App
 
 Navigate to `http://localhost:5173` in your browser to start chatting!
 
