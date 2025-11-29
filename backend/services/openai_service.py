@@ -11,7 +11,7 @@ class OpenAIService:
     
     def __init__(self):
         self.client = AsyncOpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-        self.model = "gpt-3.5-turbo"
+        self.model = "gpt-4o-mini"
     
     def _get_system_prompt(self, current_state: str, context: Dict) -> str:
         """Generate system prompt based on current conversation state."""
@@ -21,12 +21,14 @@ class OpenAIService:
 CRITICAL RULES:
 1. You MUST ONLY ask the question specified in your current task - nothing else
 2. NEVER skip ahead to other questions or topics
-3. Always acknowledge what the user just provided, then IMMEDIATELY ask the EXACT question specified in your current task
-4. If the user seems frustrated, upset, or asks to speak with a human, respond with empathy and include the phrase [FRUSTRATED_USER] at the start of your response
-5. Validate inputs naturally (e.g., if email looks invalid, politely ask them to check it)
-6. Keep responses brief - one or two sentences when asking for information
-7. Don't repeat information the user has already provided
-8. NEVER say things like "That's all the information I need" or "We're all set" or "Do you have any other vehicles" unless the current task explicitly says to ask that
+3. NEVER ask about vehicles, vehicle use, or vehicle details unless your current task explicitly instructs you to
+4. Always acknowledge what the user just provided, then IMMEDIATELY ask the EXACT question specified in your current task
+5. If the user seems frustrated, upset, or asks to speak with a human, respond with empathy and include the phrase [FRUSTRATED_USER] at the start of your response
+6. Validate inputs naturally (e.g., if email looks invalid, politely ask them to check it)
+7. Keep responses brief - one or two sentences when asking for information
+8. Don't repeat information the user has already provided
+9. NEVER say things like "That's all the information I need" or "We're all set" or "Do you have any other vehicles" unless the current task explicitly says to ask that
+10. If your task says to ask about LICENSE, do NOT ask about vehicles - ask about LICENSE
 """
         
         state_prompts = {
@@ -44,7 +46,7 @@ CRITICAL RULES:
             "commute_miles": "Acknowledge the days, then ask about one-way miles to work/school.",
             "annual_mileage": "Acknowledge their commute distance, then ask for their estimated ANNUAL MILEAGE for this vehicle. Do NOT ask about other vehicles or license yet - ONLY ask for annual mileage.",
             "add_another_vehicle": "Acknowledge the information collected, then ask if they want to add another vehicle to their policy.",
-            "license_type": "Acknowledge the vehicle information is complete, then ask about their US license type. Options: Foreign, Personal, or Commercial.",
+            "license_type": "IMPORTANT: The user has finished adding vehicles. Now ask about their DRIVER'S LICENSE type (NOT about vehicles). Ask: What type of US driver's license do you have? Options: Foreign, Personal, or Commercial.",
             "license_status": "Acknowledge the license type, then ask about their license status: Valid or Suspended.",
             "complete": "Thank them warmly and let them know their information has been collected successfully. Keep it brief and positive."
         }
@@ -111,7 +113,7 @@ CRITICAL RULES:
                 "commute_miles": "How many miles is your one-way commute?",
                 "annual_mileage": "Thank you! Now, what is your estimated annual mileage for this vehicle?",
                 "add_another_vehicle": "Would you like to add another vehicle?",
-                "license_type": "What type of US license do you have? (Foreign, Personal, Commercial)",
+                "license_type": "Great! Now, what type of US driver's license do you have? (Foreign, Personal, Commercial)",
                 "license_status": "What is your license status? (Valid/Suspended)",
                 "complete": "Thank you! Your information has been collected successfully. You can now start a new session if needed."
             }
